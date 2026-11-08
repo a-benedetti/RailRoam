@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="js/theme-init.js?v=20261108bm"></script>
+<title>Railroam - Plan Your Trip</title>
+<meta name="description" content="Plan European train trips, discover city stops and compare rail routes with RailRoam.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="theme-color" content="#315de4">
+<link rel="stylesheet" href="css/styles.css?v=20261108bm">
+<link rel="stylesheet" href="css/workspace.css?v=20261108bm">
+<link rel="stylesheet" href="css/refinements.css?v=20261108bm">
+<link rel="stylesheet" href="css/wishlist.css?v=20261108bm">
+<link rel="stylesheet" href="css/unified.css?v=20261108bm">
+<link rel="stylesheet" href="css/appearance.css?v=20261108bm">
+</head>
+<body>
+<div class="app">
+  <header class="site-header">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M6 23.5h20M8.5 26.5h15" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M9 21V9.5c0-2 1.7-3.5 3.7-3.5h6.6C21.3 6 23 7.5 23 9.5V21" stroke="white" stroke-width="2.2" stroke-linejoin="round"/>
+          <path d="M11.5 10h9v5h-9z" fill="white" opacity=".9"/>
+          <circle cx="12" cy="20" r="1.5" fill="white"/><circle cx="20" cy="20" r="1.5" fill="white"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <div class="brand-kicker">Explore Europe by rail</div>
+        <h1>RailRoam</h1>
+
+      </div>
+    </div>
+    <div class="header-tools"><a href="#workspaceHelp" id="helpToggle">How it works</a></div>
+  </header>
+  <nav class="workspace-tabs" aria-label="Planner views"><button type="button" class="active" data-panel="plan">Planner</button><span id="wishlistCount" hidden></span><button type="button" data-panel="results">Results <span id="resultCount" class="notification-badge" hidden></span></button></nav>
+  <div id="workspaceHelp" hidden class="workspace-help">Choose your places and dates, or explore a city on the desktop map. Add cities and trains to your planner or expand their schedule. Fares and station-transfer times are estimates.</div>
+
+  <main id="plannerPanel" class="workspace-panel">
+  <div class="card">
+
+    <div class="grid">
+      <div class="full trip-places">
+        <div>
+          <label>From</label>
+          <div class="ac-wrap">
+            <input id="start" aria-label="Starting city, station or port" class="place-input" value="" placeholder="Anywhere">
+            <div class="ac-menu"></div><div class="status"></div>
+          </div>
+        </div>
+        <div class="switch-wrap">
+          <button type="button" id="swapPlacesBtn" class="swap-btn" aria-label="Switch start and finish">⇄</button>
+        </div>
+        <div>
+          <div class="finish-label-row">
+            <label>To</label>
+            <label class="roundtrip-toggle"><input id="roundTrip" type="checkbox"><span>Round trip</span></label>
+          </div>
+          <div class="ac-wrap" id="finishWrap">
+            <input id="finish" aria-label="Finishing city, station or port" class="place-input" value="" placeholder="Anywhere">
+            <div class="ac-menu"></div><div class="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="date-time-block">
+        <label>Departure <span class="compat-msg" id="compatDeparture"></span></label>
+        <div class="window-card">
+          <div class="window-top">
+            <div class="date-action-row">
+              <button type="button" class="date-btn date-main" id="leaveDateBtn">Choose date</button>
+            </div>
+            <div class="range-value" id="leaveRangeLabel">06:00 - 23:00</div>
+          </div>
+          <div id="leaveRange" class="dual-range" aria-label="Departure time range">
+            <div class="dual-track"></div><div class="dual-fill"></div>
+            <button type="button" class="dual-handle dual-start" aria-label="Earliest departure"></button>
+            <button type="button" class="dual-handle dual-end" aria-label="Latest departure"></button>
+          </div>
+          <div class="range-ends"><span>00:00</span><span>03:00 (+1)</span></div>
+        </div>
+      </div>
+
+      <div class="date-time-block">
+        <label>Return / arrival <span class="compat-msg" id="compatArrival"></span></label>
+        <div class="window-card">
+          <div class="window-top">
+            <div class="date-action-row">
+              <button type="button" class="date-btn date-main" id="arriveDateBtn">Choose date</button>
+            </div>
+            <div class="range-value" id="arriveRangeLabel">06:00 - 23:55</div>
+          </div>
+          <div id="arriveRange" class="dual-range" aria-label="Arrival time range">
+            <div class="dual-track"></div><div class="dual-fill"></div>
+            <button type="button" class="dual-handle dual-start" aria-label="Earliest arrival"></button>
+            <button type="button" class="dual-handle dual-end" aria-label="Latest arrival"></button>
+          </div>
+          <div class="range-ends"><span>00:00</span><span>03:00 (+1)</span></div>
+        </div>
+      </div>
+
+      <div class="full">
+        <label>Places you want to visit <span class="compat-msg" id="compatPlaces"></span></label>
+        <div class="visit-add-row">
+          <div id="visitAddAc"></div>
+          <button type="button" id="addVisitBtn" class="visit-plus" aria-label="Add city to visit">+</button>
+        </div>
+        <div id="visitRows"></div>
+        <div class="hint">Add cities in the order you want to visit them. Dates are optional: use dates for day-level planning, then narrow the time bars only when the exact hours matter.</div>
+      </div>
+
+      <div class="full">
+        <label>Cities that may only be transfers <span class="compat-msg" id="compatTransfers"></span></label>
+        <div id="transferRows"></div>
+        <button type="button" id="addTransferBtn" class="secondary">+ Add transfer-only city</button>
+        <div class="hint">These cities may be used for connections, but they will never be highlighted or counted as sightseeing.</div>
+      </div>
+    </div>
+    <div class="avoid-section"><label>Cities to avoid <span class="compat-msg" id="compatAvoid"></span></label><div class="visit-add-row"><div id="avoidAddAc"></div><button type="button" id="addAvoidBtn" class="visit-plus" aria-label="Avoid city">+</button></div><div id="avoidChips" class="avoid-chips"></div><div class="hint">Exclude visits and train changes here. Trains may still pass through without a stop or change.</div></div>
+    <div class="notice">Not sure where to stop? Leave the city blank. RailRoam will look for places that fit naturally into your route and give you enough time to actually explore.</div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Sightseeing rules</div>
+    <div class="hint" style="margin:-4px 0 10px">The bar is fine-grained for short visits, then expands to multi-day stays up to 7 days. Added cities can override the stay length and specify preferred local arrival and departure windows.</div>
+    <div class="grid">
+      <div class="full">
+        <label>Cities to see <span class="compat-msg" id="compatCount"></span></label>
+        <div class="city-count-range">
+          <div>
+            <div class="mini-range-label">Minimum</div>
+            <div class="stepper">
+              <input id="visitCountMin" class="int-field city-count-field" inputmode="numeric" value="" placeholder="Any" aria-label="Minimum cities to see">
+              <div class="stepper-buttons">
+                <button type="button" class="stepper-btn count-up" data-target="visitCountMin" aria-label="Increase minimum cities">+</button>
+                <button type="button" class="stepper-btn count-down" data-target="visitCountMin" aria-label="Decrease minimum cities">−</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="mini-range-label">Maximum</div>
+            <div class="stepper">
+              <input id="visitCountMax" class="int-field city-count-field" inputmode="numeric" value="" placeholder="Any" aria-label="Maximum cities to see">
+              <div class="stepper-buttons">
+                <button type="button" class="stepper-btn count-up" data-target="visitCountMax" aria-label="Increase maximum cities">+</button>
+                <button type="button" class="stepper-btn count-down" data-target="visitCountMax" aria-label="Decrease maximum cities">−</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="full">
+        <label>Visit duration <span class="compat-msg" id="compatDuration"></span></label>
+        <div class="window-card duration-range">
+          <div class="window-top">
+            <span class="hint" style="margin:0">Minimum - maximum</span>
+            <div class="range-value" id="visitRangeLabel">1h - 8h</div>
+          </div>
+          <div id="visitRange" class="dual-range" aria-label="Sightseeing duration range">
+            <div class="dual-track"></div><div class="dual-fill"></div>
+            <button type="button" class="dual-handle dual-start" aria-label="Minimum visit duration"></button>
+            <button type="button" class="dual-handle dual-end" aria-label="Maximum visit duration"></button>
+          </div>
+          <div class="range-ends"><span>0:30</span><span>31 days</span></div>
+        </div>
+      </div>
+      <div class="full">
+        <div class="rule-label-row"><label class="rule-label-inline">Sightseeing hours <input id="useSightHours" type="checkbox" aria-label="Enable sightseeing hours"></label></div>
+        <div class="window-card" id="sightHoursCard">
+          <div class="window-top">
+            <span class="hint" style="margin:0">Only time inside this daily window counts as sightseeing</span>
+            <div class="range-value" id="sightRangeLabel">08:00 - 22:00</div>
+          </div>
+          <div id="sightRange" class="dual-range" aria-label="Sightseeing hours">
+            <div class="dual-track"></div><div class="dual-fill"></div>
+            <button type="button" class="dual-handle dual-start" aria-label="Sightseeing begins"></button>
+            <button type="button" class="dual-handle dual-end" aria-label="Sightseeing ends"></button>
+          </div>
+          <div class="range-ends"><span>00:00</span><span>23:59</span></div>
+        </div>
+      </div>
+
+      <div class="full">
+        <div class="rule-label-row"><label class="rule-label-inline">Sleep hours <input id="useSleepHours" type="checkbox" checked aria-label="Enable sleep hours"></label></div>
+        <div class="window-card" id="sleepHoursCard">
+          <div class="window-top">
+            <span class="hint" style="margin:0">Strongly avoid train changes during this window</span>
+            <div class="range-value" id="sleepRangeLabel">00:00 - 07:00</div>
+          </div>
+          <div id="sleepRange" class="dual-range" aria-label="Sleep hours">
+            <div class="dual-track"></div><div class="dual-fill"></div>
+            <button type="button" class="dual-handle dual-start" aria-label="Sleep window begins"></button>
+            <button type="button" class="dual-handle dual-end" aria-label="Sleep window ends"></button>
+          </div>
+          <div class="range-ends"><span>18:00</span><span>12:00 next day</span></div>
+        </div>
+      </div>
+
+      <div class="full transfer-controls" id="transferControls">
+        <label class="transfer-toggle">
+          <input id="allowTransfers" type="checkbox" checked>
+          <span>Allow short transfer-only stops</span>
+        </label>
+        <div class="layover-limit" id="layoverLimit">
+          <div class="mini-range-label">Maximum layover</div>
+          <div class="layover-stepper compact-layover">
+            <button type="button" class="layover-down" aria-label="Decrease max layover by 15 minutes">−</button>
+            <div class="layover-timebox" aria-label="Maximum non-visit layover">
+              <input id="layoverHours" inputmode="numeric" value="01" aria-label="Layover hours"><span>h</span>
+              <input id="layoverMinutes" inputmode="numeric" value="30" aria-label="Layover minutes"><span>m</span>
+            </div>
+            <button type="button" class="layover-up" aria-label="Increase max layover by 15 minutes">+</button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+    <div id="formError" class="error-box"></div>
+
+  </div>
+
+  </main>
+  <section id="resultsPanel" class="workspace-panel results-panel" aria-label="Trip results">
+  <div class="card">
+    <div class="result-head">
+      <div class="section-title" style="margin:0">Trip results</div>
+      <span class="badge">Timetable</span>
+    </div>
+    <div id="routeList"><div class="empty">Set your trip preferences, then <strong>Search</strong>.</div></div>
+  </div>
+
+  </section>
+  <div class="footer">
+    Routing and geocoding: <a href="https://transitous.org/" target="_blank">Transitous / MOTIS</a>.
+    Timetable sources: <a href="https://transitous.org/sources/" target="_blank">Transitous sources</a>.
+    Geographic data © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>.
+    Map outlines: <a href="https://www.naturalearthdata.com/" target="_blank">Natural Earth</a>.
+    Fare amounts are rough planning estimates, not live ticket prices. Prototype use only.
+  </div>
+</div>
+
+<section id="explorer" class="explorer" aria-label="Explore European rail connections">
+  <div class="map-heading"><p id="mapStatus" aria-live="polite"></p><div class="map-actions"><button type="button" id="clearSelection" class="map-reset" hidden>Clear selection</button></div></div>
+  <svg id="explorerMap" role="group" aria-label="Interactive European rail map. Drag to pan, use zoom buttons, or choose a city." tabindex="0"><g id="geography" aria-hidden="true"></g><g id="network"></g><g id="itinerary"></g><g id="cities"></g></svg>
+  <div class="map-controls"><button type="button" id="zoomIn" aria-label="Zoom in">+</button><button type="button" id="zoomOut" aria-label="Zoom out">−</button><button type="button" id="fitRoute" aria-label="Fit selected itinerary">⌖</button></div>
+  <aside id="mapPopup" class="map-popup" aria-label="Map details" hidden></aside>
+  <div class="map-legend"><span><i class="legend-line highspeed"></i>High-speed</span><span><i class="legend-line day"></i>Day train</span><span><i class="legend-line night"></i>Night train</span><span><i class="legend-dot"></i>Your stop</span></div>
+  <div class="map-attribution"><a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> · <span id="geoStatus"></span></div>
+</section>
+
+<div class="sticky">
+  <div class="sticky-inner">
+    <button id="planBtn" class="primary">Search</button><button type="button" id="cancelSearch" class="cancel-search" hidden>Cancel search</button>
+    <div class="mini">Live API. Results depend on published timetable coverage.</div>
+  </div>
+</div>
+
+<div id="calendarSheet" class="calendar-sheet" aria-hidden="true">
+  <div class="calendar-card">
+    <div class="cal-head">
+      <button type="button" id="calPrev" class="cal-nav">‹</button>
+      <div id="calTitle" class="cal-title"></div>
+      <button type="button" id="calNext" class="cal-nav">›</button>
+    </div>
+    <div class="cal-week"><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div><div>Su</div></div>
+    <div id="calGrid" class="cal-grid"></div>
+    <button type="button" id="calClose" class="cal-close">Close</button>
+  </div>
+</div>
+
+<script src="js/assets.js?v=20261108bm" defer></script>
+<script src="js/timetable-cache.js?v=20261108bm" defer></script>
+<script src="js/search-control.js?v=20261108bm" defer></script>
+<script src="js/api.js?v=20261108bm" defer></script>
+<script src="js/controls.js?v=20261108bm" defer></script>
+<script src="js/planner.js?v=20261108bm" defer></script>
+<script src="js/results.js?v=20261108bm" defer></script>
+<script src="js/explorer-data.js?v=20261108bm" defer></script>
+<script src="js/rail-geometry.js?v=20261108bm" defer></script>
+<script src="js/compact-planner.js?v=20261108bm" defer></script>
+<script src="js/network-expansion.js?v=20261108bm" defer></script>
+<script src="js/regional-details.js?v=20261108bm" defer></script>
+<script src="js/city-identity.js?v=20261108bm" defer></script>
+<script src="data/city-costs.js?v=20261108bm" defer></script>
+<script src="data/city-evidence.js?v=20261108bm" defer></script>
+<script src="js/city-ranking.js?v=20261108bm" defer></script>
+<script src="js/interrail.js?v=20261108bm" defer></script>
+<script src="js/pass-fares.js?v=20261108bm" defer></script>
+<script src="js/sleepers.js?v=20261108bm" defer></script>
+<script src="js/impact.js?v=20261108bm" defer></script>
+<script src="js/scores.js?v=20261108bm" defer></script>
+<script src="data/city-accessibility.js?v=20261108bm" defer></script>
+<script src="data/train-accessibility.js?v=20261108bm" defer></script>
+<script src="js/accessibility.js?v=20261108bm" defer></script>
+<script src="js/map-detail.js?v=20261108bm" defer></script>
+<script src="js/explorer.js?v=20261108bm" defer></script>
+<script src="js/city-constraints.js?v=20261108bm" defer></script>
+<script src="js/published-connections.js?v=20261108bm" defer></script>
+<script src="js/schedule.js?v=20261108bm" defer></script>
+<script src="js/wishlist.js?v=20261108bm" defer></script>
+<script src="js/flexible-search.js?v=20261108bm" defer></script>
+<script src="js/trip-strategy.js?v=20261108bm" defer></script>
+<script src="js/travel-preferences.js?v=20261108bm" defer></script>
+<script src="js/unified-search.js?v=20261108bm" defer></script>
+<script src="js/unified-planner.js?v=20261108bm" defer></script>
+<script src="js/train-picker.js?v=20261108bm" defer></script>
+<script src="js/planner-prompts.js?v=20261108bm" defer></script>
+<script src="js/date-calendar.js?v=20261108bm" defer></script>
+<script src="js/date-choices.js?v=20261108bm" defer></script>
+<script src="js/planner-layout.js?v=20261108bm" defer></script>
+<script src="js/rules-summary.js?v=20261108bm" defer></script>
+<script src="js/pdf-export.js?v=20261108bm" defer></script>
+<script src="js/workflow.js?v=20261108bm" defer></script>
+
+<script src="js/preferences-layout.js?v=20261108bm" defer></script>
+<script src="js/planner-reset.js?v=20261108bm" defer></script>
+<script src="js/appearance.js?v=20261108bm" defer></script>
+<script src="js/beta-notice.js?v=20261108bm" defer></script>
+</body>
+</html>

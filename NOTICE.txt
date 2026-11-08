@@ -1,0 +1,22 @@
+# Data and dependencies
+
+RailRoam code and third-party data have separate licensing requirements. No new
+licence is granted over third-party materials by this repository.
+
+- Geographic map outlines: Natural Earth, public domain; https://www.naturalearthdata.com/
+- Rail geometry, accessibility venue/station snapshots: OpenStreetMap contributors,
+  ODbL; https://www.openstreetmap.org/copyright . Raw accessibility queries and
+  timestamps are preserved in data/accessibility-osm/ in the source repository.
+- Timetables and geocoding: Transitous / MOTIS, with individual feed licences:
+  https://transitous.org/sources/ . Public API policy: https://transitous.org/api/
+- Tourism nights/population: Eurostat; source metadata in data/city-evidence.json.
+- Emission factors: UK DESNZ 2026; source and methodology in js/impact.js.
+- Which?, HappyCow and GDS score snapshots: attribution is recorded in the data
+  and application. Redistribution permission remains a release prerequisite;
+  public availability alone is not a redistribution licence.
+- html2canvas and jsPDF: MIT; complete licences in vendor/.
+
+This is a beta planning tool. Estimates and access tags are not ticket quotes,
+guaranteed timetables, or guarantees of accessible boarding.
+
+City travel costs: Budget Your Trip, traveller-reported average daily budgets, reviewed 2026-11-08. https://www.budgetyourtrip.com/europecheapest-cities . Source facts are partial snapshots, not quotes; redistribution terms require release review.
