@@ -210,6 +210,7 @@ function setupAutocomplete(input,options={}){
     active=-1;
   };
   const renderRows=()=>{
+    rows=rows.filter(p=>window.RailRoamCoverage?.selectable(p)!==false);
     if(!rows.length){
       menu.innerHTML='<div class="ac-item"><strong>No rail place found</strong><span>Try another spelling or a nearby station.</span></div>';
     }else{

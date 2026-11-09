@@ -85,7 +85,7 @@ async function hydrateRouteMaps(root=document){
       lon0:Number(svg.dataset.lon0),lon1:Number(svg.dataset.lon1),
       lat0:Number(svg.dataset.lat0),lat1:Number(svg.dataset.lat1)
     };
-    const W=236,H=236,pad=8;
+    const [, , W,H]=svg.getAttribute("viewBox").split(/\s+/).map(Number),pad=Number(svg.dataset.pad||12);
     const project=(lon,lat)=>({
       x:pad+(lon-b.lon0)/(b.lon1-b.lon0)*(W-2*pad),
       y:H-pad-(lat-b.lat0)/(b.lat1-b.lat0)*(H-2*pad)
@@ -182,7 +182,7 @@ function routeMapHtml(r,form){
   }).join("");
 
   return `<div class="route-map-wrap">
-    <svg class="route-map" viewBox="0 0 ${W} ${H}" data-lon0="${LON0}" data-lon1="${LON1}" data-lat0="${LAT0}" data-lat1="${LAT1}" role="img" aria-label="Simplified route map">
+    <svg class="route-map" viewBox="0 0 ${W} ${H}" data-pad="${pad}" data-lon0="${LON0}" data-lon1="${LON1}" data-lat0="${LAT0}" data-lat1="${LAT1}" role="img" aria-label="Simplified route map">
       <g class="country-layer"></g>
       <path class="map-route" d="${path}"/>
       ${dots}${labels}
@@ -205,7 +205,7 @@ function renderOneRoute(r,form,idx){
   let body=nodeHtml(escapeHtml(fmtNode(flat[0].leg.startTime,flat[0].leg.from?.tz)),flat[0].leg.from?.name||form.start.label,"Depart");
   for(let i=0;i<flat.length;i++){
     const leg=flat[i].leg;
-    body+=trainHtml(leg,form);
+    body+=trainHtml(leg,form)+(window.RailRoamScenery?.html(leg)||'');
     if(i===flat.length-1){
       body+=nodeHtml(escapeHtml(fmtNode(leg.endTime,leg.to?.tz)),leg.to?.name||form.finish.label,"Arrive");
       continue;
@@ -342,6 +342,7 @@ function routeSearchLoaderHtml(){
       <div class="inline-train t3">${cars("car-steam",8)}<span class="loco-steam"></span></div>
       <div class="inline-train t4">${cars("car-normal",10)}<span class="loco-normal"></span></div>
     </div>
+    <p class="loading-tip">${escapeHtml(window.RailRoamTips?.pick()||"A night train can save you a hotel night. Check whether a berth reservation is required.")}</p>
   </div>`;
 }
 const planBtn=document.getElementById("planBtn");

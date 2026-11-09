@@ -9,6 +9,8 @@ const RailRoamPublished=(()=>{
  function leg(a,b,date,departure,arrival,offset,number,night=false){const from=stops[a],to=stops[b],startTime=zonedLocalToDate(date,departure,from.tz).toISOString(),endTime=zonedLocalToDate(day(date,offset),arrival,to.tz).toISOString();return {mode:night?'NIGHT_RAIL':'LONG_DISTANCE',from:{...from},to:{...to},startTime,endTime,displayName:night?'Sofia–Halkalı Express '+number:'BDZ / CFR '+number,tripId:'bdz-published-'+number+'-'+date,agencyName:night?'BDZ / TCDD':'BDZ / CFR',agencyUrl:'https://www.bdz.bg/en',routeUrl:source,...(night?{hasSleepingCar:true,accommodationTypes:['COUCHETTE','SLEEPER']}:{}),source};}
  function itinerary(legs){return {startTime:legs[0].startTime,endTime:legs.at(-1).endTime,legs,transfers:Math.max(0,transitLegs({legs}).length-1),source,_published:true};}
  function rows(gateway,date,reverse=false){
+  if(gateway==='BucharestSofia'){if(date<'2026-10-25'||date>'2026-12-12')return null;const url='https://p.bdz.bg/www/s/o/sofia-bucuresti-ot-25102026-g-5473.pdf',legs=reverse?[leg('Sofia','Ruse',date,'07:00','13:38',0,'2611/462'),leg('Ruse','Bucharest',date,'14:15','16:56',0,'1094')]:[leg('Bucharest','Ruse',date,'10:46','13:40',0,'1095'),leg('Ruse','Sofia',date,'14:25','20:41',0,'463')];legs.forEach(l=>{l.source=url;l.routeUrl=url;});return {...itinerary(legs),source:url};}
+
   if(date<'2026-11-02'||date>'2026-12-12'||reverse&&gateway!=='Sofia'&&day(date,1)>'2026-12-12')return null;
   if(gateway==='Sofia')return itinerary([reverse?leg('Istanbul','Sofia',date,'23:13','10:28',1,'12503/492/1620',true):leg('Sofia','Istanbul',date,'18:45','07:21',1,'493/12504',true)]);
   if(!reverse)return itinerary([leg('Bucharest','Ruse',date,'10:46','13:40',0,'1095'),leg('Ruse','Gorna',date,'14:25','16:30',0,'463'),leg('Gorna','Dimitrovgrad',date,'17:35','21:57',0,'465'),leg('Dimitrovgrad','Istanbul',date,'23:20','07:21',1,'493/12504',true)]);
@@ -18,14 +20,14 @@ const RailRoamPublished=(()=>{
  const feed=querySegmentUncached;
  async function query(from,to,start,end,limit,arriveBy,signal){
   checkSearchSignal(signal);
-  const reverse=key(from)==='istanbul',outbound=key(to)==='istanbul';
+  const sofiaLink=(key(from)==='sofia'&&key(to)!=='istanbul')||(key(to)==='sofia'&&key(from)!=='istanbul'),reverse=sofiaLink?key(from)==='sofia':key(from)==='istanbul',outbound=sofiaLink?key(to)==='sofia':key(to)==='istanbul';
   if(!reverse&&!outbound)return feed(from,to,start,end,limit,arriveBy,signal);
   const other=reverse?to:from;
   if(key(other)==='istanbul'||Number(other.lon)>30)return feed(from,to,start,end,limit,arriveBy,signal);
-  const gateway=key(other)==='sofia'?'Sofia':'Bucharest',intermediate=Object.keys(stops).find(name=>!['Istanbul','Sofia'].includes(name)&&key(stops[name])===key(other)),terminal=stops[intermediate||gateway],direct=key(other)===key(terminal);
+  const gateway=sofiaLink?'BucharestSofia':key(other)==='sofia'?'Sofia':'Bucharest',intermediate=Object.keys(stops).find(name=>!['Istanbul','Sofia'].includes(name)&&key(stops[name])===key(other)),terminal=stops[intermediate||(sofiaLink?'Bucharest':gateway)],direct=key(other)===key(terminal);
   // A departure-day constraint applies to the first train, not to later connections.
   const connectorEnd=!reverse&&!arriveBy?new Date(+end+6*86400000):end;
-  const dates=[];for(let d=day(localDateParts(start,reverse?'Europe/Istanbul':terminal.tz).date,-2);d<=localDateParts(connectorEnd,reverse?terminal.tz:'Europe/Istanbul').date;d=day(d,1)){let it=rows(gateway,d,reverse);if(it&&intermediate&&intermediate!=='Bucharest'){const index=it.legs.findIndex(l=>key(reverse?l.to:l.from)===key(terminal));it=index<0?null:itinerary(reverse?it.legs.slice(0,index+1):it.legs.slice(index));}if(it)dates.push(it);}
+  const dates=[];for(let d=day(localDateParts(start,reverse?(sofiaLink?'Europe/Sofia':'Europe/Istanbul'):terminal.tz).date,-2);d<=localDateParts(connectorEnd,reverse?terminal.tz:(sofiaLink?'Europe/Sofia':'Europe/Istanbul')).date;d=day(d,1)){let it=rows(gateway,d,reverse);if(it&&intermediate&&intermediate!=='Bucharest'){const index=it.legs.findIndex(l=>key(reverse?l.to:l.from)===key(terminal));it=index<0?null:itinerary(reverse?it.legs.slice(0,index+1):it.legs.slice(index));}if(it)dates.push(it);}
   if(!dates.length)return feed(from,to,start,end,limit,arriveBy,signal);
   if(direct)return dates.filter(it=>new Date(arriveBy?it.endTime:it.startTime)>=start&&new Date(arriveBy?it.endTime:it.startTime)<=end).slice(0,limit);
   let candidates=[];

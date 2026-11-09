@@ -7,11 +7,12 @@ const RailRoamPdf=(()=>{
   const frame=document.createElement('iframe');frame.title='Preparing route PDF';frame.setAttribute('aria-hidden','true');frame.style.cssText='position:fixed;left:-10000px;top:0;width:820px;height:1100px;border:0;';
   const loaded=new Promise(resolve=>frame.onload=resolve);frame.srcdoc=html;document.body.appendChild(frame);
   try{await loaded;const doc=frame.contentDocument;doc.querySelector('button')?.remove();await doc.fonts.ready;
-   const body=doc.body,rect=body.getBoundingClientRect(),canvas=await html2canvas(body,{scale:2,backgroundColor:'#ffffff',logging:false,windowWidth:820,scrollX:0,scrollY:0});
+   const body=doc.body,rect=body.getBoundingClientRect(),canvas=await html2canvas(body,{scale:2,backgroundColor:'#ffffff',logging:false,windowWidth:820,scrollX:0,scrollY:0,x:rect.left,y:rect.top,width:rect.width,height:rect.height});
    const pdf=new jspdf.jsPDF({unit:'mm',format:'a4',compress:true});pdf.setProperties({title:'RailRoam planned route',creator:'RailRoam'});
    const width=190,pagePixels=277*canvas.width/width,ratio=canvas.height/rect.height;
    const breaks=[...doc.querySelectorAll('section,tr,footer,p,.rules-group,.rules-group li')].map(el=>(el.getBoundingClientRect().bottom-rect.top)*ratio).sort((a,b)=>a-b);
-   let offset=0,page=0;while(offset<canvas.height){let end=Math.min(canvas.height,offset+pagePixels);if(end<canvas.height){const safe=breaks.filter(n=>n<=end&&n>offset+pagePixels*.4).at(-1);if(safe)end=Math.ceil(safe);}
+   const groups=[...doc.querySelectorAll('section,.rules-group')].filter(el=>!el.querySelector('.rules-group')).map(el=>{const b=el.getBoundingClientRect();return {top:(b.top-rect.top)*ratio,bottom:(b.bottom-rect.top)*ratio};});
+   let offset=0,page=0;while(offset<canvas.height){let end=Math.min(canvas.height,offset+pagePixels);if(end<canvas.height){const crossing=groups.filter(b=>b.top<end&&b.bottom>end&&b.bottom-b.top<pagePixels*.9&&b.top>offset+pagePixels*.2);if(crossing.length)end=Math.floor(Math.min(...crossing.map(b=>b.top)));else{const safe=breaks.filter(n=>n<=end&&n>offset+pagePixels*.4).at(-1);if(safe)end=Math.ceil(safe);}}
     const tile=document.createElement('canvas');tile.width=canvas.width;tile.height=Math.ceil(end-offset);tile.getContext('2d').drawImage(canvas,0,offset,canvas.width,tile.height,0,0,canvas.width,tile.height);
     if(page++)pdf.addPage();pdf.addImage(tile.toDataURL('image/png'),'PNG',10,10,width,tile.height*width/canvas.width,undefined,'FAST');
     // Keep the source operator links clickable in the PDF.

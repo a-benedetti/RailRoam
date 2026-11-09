@@ -1,0 +1,11 @@
+/* Soft preferences only: no network requests and no extra search branches. */
+window.RailRoamFlexiblePreferences=(()=>{
+ const months=['january','february','march','april','may','june','july','august','september','october','november','december'];
+ function enabled(s=appState){return ['any','range'].includes(s.dateChoices?.leave?.mode)||['any','range','length'].includes(s.dateChoices?.arrive?.mode);}
+ function guide(p){const n=typeof p==='string'?p:p?.city||p?.name;return typeof EXPLORER_CITY_GUIDES==='undefined'?null:EXPLORER_CITY_GUIDES[n];}
+ function season(p,date){const text=guide(p)?.[1]?.toLowerCase();if(!text)return .5;const set=new Set();for(const part of text.split(/[·;,]/)){const found=[...part.matchAll(/january|february|march|april|may|june|july|august|september|october|november|december/g)].map(m=>months.indexOf(m[0]));if(found.length===2){let n=found[0];for(let k=0;k<12;k++){set.add(n);if(n===found[1])break;n=(n+1)%12;}}else found.forEach(n=>set.add(n));}return set.size?(set.has(Number(String(date).slice(5,7))-1)?1:0):.5;}
+ function stayHours(p){const text=guide(p)?.[0]||'',m=text.match(/(\d+)(?:[^\d]+(\d+))?\s*days?/);return m?(Number(m[1])+Number(m[2]||m[1]))/2*24:null;}
+ function score(route){if(!route._form?._flexibleDates)return 0;const flat=route.analysis?.flat||[];if(!flat.length)return .5;const rows=[{p:route._form.start,date:flat[0].leg.startTime,w:1},{p:route._form.finish,date:flat.at(-1).leg.endTime,w:1}];let stay=0,known=0;for(const v of route.analysis.visits||[]){const l=flat.find(x=>typeof RailRoamCityIdentity!=='undefined'&&RailRoamCityIdentity.key(x.leg.to)===RailRoamCityIdentity.key(v.city));rows.push({p:v.city,date:l?.leg.endTime||flat[0].leg.startTime,w:Math.max(1,Math.min(4,v.mins/1440))});const target=stayHours(v.city);if(target&&v.mins>0){stay+=Math.min(v.mins/60,target)/Math.max(v.mins/60,target);known++;}}const seasonal=rows.reduce((n,r)=>n+season(r.p,r.date)*r.w,0)/rows.reduce((n,r)=>n+r.w,0);return .65*seasonal+.35*(known?stay/known:.5);}
+ function dates(form,values){if(!form._flexibleDates)return values;const cities=[form.start,form.finish,...(form.visits||[]).map(v=>v.sel)].filter(Boolean);return values.map((date,i)=>({date,i,q:cities.reduce((n,p)=>n+season(p,date),0)})).sort((a,b)=>b.q-a.q||a.i-b.i).map(x=>x.date);}
+ return {enabled,season,stayHours,score,dates};
+})();

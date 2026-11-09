@@ -20,3 +20,5 @@ This is a beta planning tool. Estimates and access tags are not ticket quotes,
 guaranteed timetables, or guarantees of accessible boarding.
 
 City travel costs: Budget Your Trip, traveller-reported average daily budgets, reviewed 2026-11-08. https://www.budgetyourtrip.com/europecheapest-cities . Source facts are partial snapshots, not quotes; redistribution terms require release review.
+
+Coverage snapshot: Transitous departure and cross-border checks, 2026-11-09, 140 cities / 41 countries; source https://transitous.org/sources/ . Empty feed results are not proof that no physical railway exists. Snapshot expires 2026-12-12. Scenic indicators identify named lines in Interrail scenic-route guides; indicative RailRoam bands, not independent review scores. https://www.interrail.com/en/plan-your-trip/tips-and-tricks/trains-europe/scenic-trains

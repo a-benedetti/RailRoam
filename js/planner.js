@@ -315,7 +315,7 @@ function analyzeRoute(route,form){
       const explicitVisit=cur.partIndex!==nxt.partIndex ? explicitByPart.get(cur.partIndex) : null;
       if(explicitVisit && visitDurationMinutes(explicitVisit,availableStart.toISOString(),b.startTime,a.to?.tz||b.from?.tz)>=explicitVisit.min && visitDurationMinutes(explicitVisit,availableStart.toISOString(),b.startTime,a.to?.tz||b.from?.tz)<=explicitVisit.max){
         type="visit";explicit=explicitVisit.explicit!==false;city=explicitVisit.sel.city;
-      }else if(!explicitVisit && !['journey','discover'].includes(form._strategy) && gapMin>appState.maxNonVisitLayover && exploreMin>=appState.visitMin&&exploreMin<=appState.visitMax&&!transferOnlyMatch(city,form)){
+      }else if(!explicitVisit && (!['journey','discover'].includes(form._strategy)||form._flexibleDates) && gapMin>appState.maxNonVisitLayover && exploreMin>=appState.visitMin&&exploreMin<=appState.visitMax&&!transferOnlyMatch(city,form)){
         type="visit";
       }else{
         type="transfer";

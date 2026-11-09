@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42"><rect width="42" height="42" rx="12" fill="#8fa5ff"/><g transform="translate(7 7)" color="white"><svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-          <path d="M6 23.5h20M8.5 26.5h15" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M9 21V9.5c0-2 1.7-3.5 3.7-3.5h6.6C21.3 6 23 7.5 23 9.5V21" stroke="white" stroke-width="2.2" stroke-linejoin="round"/>
-          <path d="M11.5 10h9v5h-9z" fill="white" opacity=".9"/>
-          <circle cx="12" cy="20" r="1.5" fill="white"/><circle cx="20" cy="20" r="1.5" fill="white"/>
-        </svg></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#8fa5ff"/><g color="#fff"><svg x="5" y="5" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3.5"/><rect x="8" y="6" width="8" height="5" rx="1"/><path d="M8 21l2-3m6 3-2-3M7 21h10"/><circle cx="8.5" cy="14.5" r=".7" fill="currentColor" stroke="none"/><circle cx="15.5" cy="14.5" r=".7" fill="currentColor" stroke="none"/></svg></g></svg>

@@ -65,7 +65,7 @@ const RailRoamUnified=(()=>{
   // Broad departure intervals need weekday diversity: the provider's earliest
   // labels can all use the same slow interchange. Probe another day without
   // changing the original departure or relative-arrival constraints.
-  const probes=[];if(providedPlans){for(const date of RailRoamStrategy.dates())for(const visits of plans)probes.push({visits,date});}else for(const visits of plans){probes.push({visits});const date=addDaysYmd(appState.leaveDate,5);if(date<=(appState.leaveDateEnd||appState.leaveDate))probes.push({visits,date});}
+  const probes=[];if(providedPlans){for(const date of (window.RailRoamFlexiblePreferences?.dates(form,RailRoamStrategy.dates())||RailRoamStrategy.dates()))for(const visits of plans)probes.push({visits,date});}else for(const visits of plans){probes.push({visits});const date=addDaysYmd(appState.leaveDate,5);if(date<=(appState.leaveDateEnd||appState.leaveDate))probes.push({visits,date});}
   const desiredIdeas=providedPlans?Math.min(4,new Set(plans.map(v=>v.map(x=>key(x.sel)).join('|'))).size):1;
   if(depth&&probes.length>1)probes.push(...probes.splice(0,depth%probes.length));
   const seen=new Set(),all=[];let repairs=0;for(let probeIndex=0;probeIndex<probes.length;probeIndex++){const {visits,date}=probes[probeIndex];
@@ -83,6 +83,7 @@ const RailRoamUnified=(()=>{
   }return [...new Map(all.map(r=>[routeSignature(r),r])).values()];
  }
  async function runSearch(form,depth=0){
+  form={...form,_flexibleDates:window.RailRoamFlexiblePreferences?.enabled()||false};
   const items=RailRoamWishlist.items(),targets=form.visits.filter(v=>v.sel).map(target);
   form._strategy=window.RailRoamStrategy?.classify(form)||form._strategy;
   if(form._strategy==='tour'&&!items.length){

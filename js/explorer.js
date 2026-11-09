@@ -225,6 +225,7 @@
    ${!options.length&&op?`<div class="popup-metrics"><div style="grid-column:1/-1"><small>Frequency</small>${esc(connection.frequency||op.frequency)}</div></div><p>${esc(accommodation)}</p>${op.notes?`<p>${esc(op.notes)}</p>`:''}`:''}
    ${!options.length?`<div class="pass-info"><div><strong>Interrail · Global Pass</strong><span>${esc(pass.status)}</span></div><p>${esc(pass.extra)}</p><a href="${esc(pass.source)}" target="_blank" rel="noopener">Pass rules ↗</a></div>`:''}
    ${RailRoamImpact.connection(state.connection,leg)}
+   ${window.RailRoamScenery?.html(leg,state.connection)||''}
    ${window.RailRoamAccess?.connectionHtml(state.connection,leg)||''}
    <button class="popup-see-more" id="wishlistAdd"><span>+ Add to wishlist</span><span>♡</span></button>
    <button class="popup-see-more" id="seeDepartures" aria-expanded="false" aria-controls="departureResults"><span>Timetable</span><span>⌄</span></button><div id="departureResults" hidden aria-live="polite"></div>
@@ -409,7 +410,7 @@
   if(state.geo)return;state.geo=true;$('geoStatus').textContent='Loading map…';
   const rail=RailGeometry.load().then(()=>true,()=>false);
   const data=await getCountryGeo();
-  if(data)$('geography').innerHTML=data.features.filter(f=>f.geometry).map(f=>`<path class="map-country geo-land" fill="#f5f7f2" stroke="#8198a6" stroke-width="1.25" d="${geometryToPath(f.geometry,(lon,lat)=>project(lon,lat))}" fill-rule="evenodd" vector-effect="non-scaling-stroke" data-country="${esc(f.properties.ADMIN||f.properties.name||'')}"/>`).join('');
+  if(data)$('geography').innerHTML=data.features.filter(f=>f.geometry).map(f=>`<path class="map-country geo-land ${window.RailRoamCoverage?.muted(f)?'coverage-muted':''}" fill="#f5f7f2" stroke="#8198a6" stroke-width="1.25" d="${geometryToPath(f.geometry,(lon,lat)=>project(lon,lat))}" fill-rule="evenodd" vector-effect="non-scaling-stroke" data-country="${esc(f.properties.ADMIN||f.properties.name||'')}"/>`).join('');
   const tracks=await rail;paint();
   if(!data||!tracks){state.geo=false;if(!data)countryGeoPromise=null;$('geoStatus').innerHTML='<button type="button" class="retry-map">Retry map</button>';}else $('geoStatus').textContent='';
  }
